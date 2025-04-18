@@ -1,11 +1,20 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {useState} from 'react';
+import RoomEntry,{JoinData} from './components/RoomEntry';
 import './App.css';
 
+
 function App() {
+  const [room,setRoom] = useState<JoinData|null>(null);
   return (
     <div className="App">
-      <header className="App-header">
+      {
+        room?(
+          <></>
+        ):(
+          <RoomEntry onJoin={(data)=>setRoom(data)}/>
+        )
+      }
+      {/* <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
@@ -18,7 +27,7 @@ function App() {
         >
           Learn React
         </a>
-      </header>
+      </header> */}
     </div>
   );
 }
