@@ -16,9 +16,16 @@ export default function ChatSession({ roomId, nickname,isCreator }: Props) {
   const [client, setClient] = useState<TelepartyClient | null>(null);
   const [creatorRoomId,setCreatorRoomId] = useState<string>(roomId);
 
+  const handleIncomingMessage = (message: any) => {
+    console.log("Incoming ", message);
+
+      const chatMessage = message.data as SessionChatMessage;
+      setMessages((prev) => [...prev, chatMessage]);
+  };
+
   useEffect(() => {
 
-    const handler: SocketEventHandler = {
+    const eventHandler: SocketEventHandler = {
 
       onConnectionReady: async () => {
 
@@ -40,16 +47,16 @@ export default function ChatSession({ roomId, nickname,isCreator }: Props) {
       //   }
       // }
       onMessage: (message) => {
-        console.log("Incoming message →", message);
+        handleIncomingMessage(message);
       
-        if (message.type === SocketMessageTypes.SEND_MESSAGE) {
-          const inChatMessage = message.data as SessionChatMessage;
-          setMessages((prev) => [...prev, inChatMessage]);
-        } 
+        // if (message.type === SocketMessageTypes.SEND_MESSAGE) {
+        //   const inChatMessage = message.data as SessionChatMessage;
+        //   setMessages((prev) => [...prev, inChatMessage]);
+        // } 
       }
     };
 
-    const newClient = new TelepartyClient(handler);
+    const newClient = new TelepartyClient(eventHandler);
     setClient(newClient);
   }, [roomId, nickname]);
 
