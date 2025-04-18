@@ -1,18 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-export default function MessageInput({ onSend }: { onSend: (text: string) => void }) {
-  const [text, setText] = useState('');
+interface Props {
+  onSend: (text: string) => void;
+  isConnected: boolean;
+}
+
+export default function MessageInput({ onSend, isConnected }: Props) {
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (message.trim() && isConnected) {
+      onSend(message);
+      setMessage("");
+    }
+  };
+
   return (
-    <div>
+    <form onSubmit={handleSubmit} className="message-input-form">
       <input
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        onKeyDown={(e) => e.key === 'Enter' && onSend(text)}
+        type="text"
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        placeholder={isConnected ? "Type a message..." : "Reconnecting..."}
+        disabled={!isConnected}
+        className="message-input"
       />
-      <button onClick={() => {
-        onSend(text);
-        setText('')
-        }}>Send</button>
-    </div>
+      <button 
+        type="submit" 
+        disabled={!isConnected || !message.trim()} 
+        className="send-button"
+      >
+        Send
+      </button>
+    </form>
   );
 }

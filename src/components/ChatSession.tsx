@@ -15,12 +15,15 @@ export default function ChatSession({ roomId, nickname,isCreator }: Props) {
   const [messages, setMessages] = useState<SessionChatMessage[]>([]);
   const [client, setClient] = useState<TelepartyClient | null>(null);
   const [creatorRoomId,setCreatorRoomId] = useState<string>(roomId);
+  const [isConnected, setIsConnected] = useState<boolean>(false);
 
   const handleIncomingMessage = (message: any) => {
     console.log("Incoming ", message);
 
+    if (message.type === SocketMessageTypes.SEND_MESSAGE) {
       const chatMessage = message.data as SessionChatMessage;
       setMessages((prev) => [...prev, chatMessage]);
+    }
   };
 
   useEffect(() => {
@@ -30,6 +33,8 @@ export default function ChatSession({ roomId, nickname,isCreator }: Props) {
       onConnectionReady: async () => {
 
         //const roomId = await client?.createChatRoom(nickname);
+        console.log(" WebSocket is ready");
+        setIsConnected(true);
        
         if (isCreator) {
           const newRoomId = await client?.createChatRoom(nickname);
@@ -40,7 +45,6 @@ export default function ChatSession({ roomId, nickname,isCreator }: Props) {
 
         }
       },
-      onClose: () => alert('Connection lost'),
 
       onMessage: (message) => {
         handleIncomingMessage(message);
@@ -49,15 +53,19 @@ export default function ChatSession({ roomId, nickname,isCreator }: Props) {
         //   const inChatMessage = message.data as SessionChatMessage;
         //   setMessages((prev) => [...prev, inChatMessage]);
         // } 
-      }
+      },
+      onClose: () => {
+        setIsConnected(false);
+        alert("Connection lost. refresh.");
+      },
     };
 
     const newClient = new TelepartyClient(eventHandler);
     setClient(newClient);
-  }, [roomId, nickname]);
+  }, [roomId, nickname,isCreator]);
 
   const sendMessage = (text: string) => {
-    if (!client) return;
+    if (!client || !isConnected || !text.trim()) return;
 
     const tempMessage: SessionChatMessage = {
       body: text,
@@ -67,17 +75,19 @@ export default function ChatSession({ roomId, nickname,isCreator }: Props) {
       timestamp: Date.now(),
     };
 
-    client.sendMessage(SocketMessageTypes.SEND_MESSAGE, { body: text });
+    setMessages(prev => [...prev, tempMessage]);
+    // client.sendMessage(SocketMessageTypes.SEND_MESSAGE, { body: text });
 
-    handleIncomingMessage({
-      type: SocketMessageTypes.SEND_MESSAGE,
-      data: tempMessage,
-    });
+    // handleIncomingMessage({
+    //   type: SocketMessageTypes.SEND_MESSAGE,
+    //   data: tempMessage,
+    // });
   };
   return (
     <div>
-      <ShowMessage messages={messages} />
-      <MessageInput onSend={sendMessage} />
+       {isConnected ? " Connected" : " Disconnected"}
+      <ShowMessage messages={messages} currentUser={nickname}/>
+      <MessageInput onSend={sendMessage} isConnected={isConnected} />
     </div>
   );
 }

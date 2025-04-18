@@ -1,17 +1,43 @@
-import React from 'react';
-import { SessionChatMessage} from "teleparty-websocket-lib";
+import React from "react";
+import { SessionChatMessage } from "teleparty-websocket-lib";
 
-export default function ShowMessage({ messages }: { messages: SessionChatMessage[] }) {
-  console.log(messages,'messages')
+interface Props {
+  messages: SessionChatMessage[];
+  currentUser: string;
+}
+
+export default function ShowMessage({ messages, currentUser }: Props) {
   return (
-    <div>
-      {messages.map((msg, index) => (
-        <div key={index}>
-          <strong>{msg.userNickname || 'Default'}</strong>: {msg.body}
-          <br />
-          <div>{new Date(msg.timestamp).toLocaleTimeString()}</div>
-        </div>
-      ))}
+    <div className="messages-container">
+      {messages.length === 0 ? (
+        <div className="no-messages">No messages yet. Start the conversation!</div>
+      ) : (
+        messages.map((message) => {
+          const isSystem = message.isSystemMessage;
+          
+          return (
+            <div 
+            >
+              {!isSystem && (
+                <div>
+                  {/* {message.userIcon && (
+                    <img 
+                      src={message.userIcon} 
+                      alt={`${message.userNickname}'s icon`} 
+                      className="user-icon"
+                    />
+                  )} */}
+                  <strong>{message.userNickname}</strong>
+                </div>
+              )}
+              <div>{message.body}</div>
+              <div className="message-timestamp">
+                {new Date(message.timestamp).toLocaleTimeString()}
+              </div>
+            </div>
+          );
+        })
+      )}
     </div>
   );
 }
