@@ -9,7 +9,10 @@ export default function MessageInput({ onSend }: { onSend: (text: string) => voi
         onChange={(e) => setText(e.target.value)}
         onKeyDown={(e) => e.key === 'Enter' && onSend(text)}
       />
-      <button onClick={() => onSend(text)}>Send</button>
+      <button onClick={() => {
+        onSend(text);
+        setText('')
+        }}>Send</button>
     </div>
   );
 }

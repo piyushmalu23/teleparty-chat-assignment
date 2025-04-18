@@ -1,7 +1,7 @@
 import React from 'react';
 import { SessionChatMessage} from "teleparty-websocket-lib";
 
-export default function MessageList({ messages }: { messages: SessionChatMessage[] }) {
+export default function ShowMessage({ messages }: { messages: SessionChatMessage[] }) {
   console.log(messages,'messages')
   return (
     <div>
@@ -9,7 +9,7 @@ export default function MessageList({ messages }: { messages: SessionChatMessage
         <div key={index}>
           <strong>{msg.userNickname || 'Default'}</strong>: {msg.body}
           <br />
-          <div>{msg.timestamp}</div>
+          <div>{new Date(msg.timestamp).toLocaleTimeString()}</div>
         </div>
       ))}
     </div>
