@@ -3,6 +3,7 @@ import React, { useState } from "react";
 export interface JoinData {
   roomId: string;
   nickname: string;
+  isCreator:boolean;
 }
 
 export default function RoomEntry({
@@ -21,12 +22,14 @@ export default function RoomEntry({
         value={roomId}
         onChange={(e) => setRoomId(e.target.value)}
       />
+      <br/>
       <input
         placeholder="Nickname"
         value={nickname}
         onChange={(e) => setNickname(e.target.value)}
       />
-      <button onClick={()=>onJoin({roomId,nickname})}>Take me In!</button>
+      <button onClick={()=>onJoin({roomId,nickname,isCreator:false})}>Take me In!</button>
+      <button onClick={()=>onJoin({roomId,nickname,isCreator:true})}>Create Room</button>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import RoomEntry,{JoinData} from './components/RoomEntry';
 import './App.css';
+import ChatSession from './components/ChatSession';
 
 
 function App() {
@@ -9,7 +10,7 @@ function App() {
     <div className="App">
       {
         room?(
-          <></>
+          <ChatSession {...room}/>
         ):(
           <RoomEntry onJoin={(data)=>setRoom(data)}/>
         )
